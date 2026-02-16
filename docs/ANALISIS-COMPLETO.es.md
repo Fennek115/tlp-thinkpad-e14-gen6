@@ -377,4 +377,3 @@ Los parámetros más importantes que faltaban eran:
 2. **AHCI_RUNTIME_PM** - Importante para el NVMe
 3. **NMI_WATCHDOG** - Detalles que importan
 
-Voy a generar ahora los archivos de configuración actualizados con todos estos cambios integrados.
