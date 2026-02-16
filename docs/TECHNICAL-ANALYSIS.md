@@ -250,7 +250,7 @@ Manual activation only. Why?
 
 ## 📚 References
 
-- [Intel Core Ultra 5 125U Specs](https://ark.intel.com)
+- [Intel Core Ultra 5 125U Specs](https://www.intel.la/content/www/xl/es/products/sku/237330/intel-core-ultra-5-processor-125u-12m-cache-up-to-4-30-ghz/specifications.html)
 - [TLP Documentation](https://linrunner.de/tlp/settings/processor.html)
 - [Intel HWP Documentation](https://docs.kernel.org/admin-guide/pm/intel_pstate.html)
 - [ThinkPad ACPI Documentation](https://www.kernel.org/doc/html/latest/admin-guide/laptops/thinkpad-acpi.html)
