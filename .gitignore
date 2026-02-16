@@ -1,0 +1,18 @@
+# Backup files
+*.backup
+*.bak
+*~
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Personal notes (if you want to keep local notes not in repo)
+notes/
+personal/
