@@ -33,7 +33,7 @@ print_error() {
 
 # Check root
 if [ "$EUID" -ne 0 ]; then 
-    print_error "Este script debe ejecutarse como root (con sudo)"
+    print_error "This script must be run as root (with sudo)"
     exit 1
 fi
 
@@ -46,144 +46,144 @@ print_info "=========================================="
 echo ""
 
 # Check TLP installed
-print_info "Verificando instalación de TLP..."
+print_info "Checking TLP installation..."
 if ! command -v tlp &> /dev/null; then
-    print_error "TLP no está instalado"
+    print_error "TLP is not installed"
     echo ""
-    echo "Por favor instala TLP primero:"
+    echo "Please install TLP first:"
     echo "  Arch Linux: sudo pacman -S tlp"
     echo "  Debian/Ubuntu: sudo apt install tlp"
     echo "  Fedora: sudo dnf install tlp"
     exit 1
 fi
-print_success "TLP instalado correctamente"
+print_success "TLP installed correctly"
 echo ""
 
 # Create backup
-print_info "Creando backup de configuración actual..."
+print_info "Creating backup of current configuration..."
 BACKUP_DIR="$HOME/tlp-backup-$(date +%Y%m%d-%H%M%S)"
 mkdir -p "$BACKUP_DIR"
 
 if [ -f /etc/tlp.conf ]; then
     cp /etc/tlp.conf "$BACKUP_DIR/"
-    print_success "Backup de /etc/tlp.conf creado"
+    print_success "Backup of /etc/tlp.conf created"
 fi
 
 if [ -d /etc/tlp.d ] && [ "$(ls -A /etc/tlp.d)" ]; then
     cp -r /etc/tlp.d "$BACKUP_DIR/"
-    print_success "Backup de /etc/tlp.d/ creado"
+    print_success "Backup of /etc/tlp.d/ created"
 fi
 
-print_success "Backup guardado en: $BACKUP_DIR"
+print_success "Backup saved in: $BACKUP_DIR"
 echo ""
 
 # Check for conflicting services
-print_info "Verificando servicios conflictivos..."
+print_info "Checking for conflicting services..."
 CONFLICTS_FOUND=false
 
 if systemctl is-active --quiet power-profiles-daemon; then
-    print_warning "power-profiles-daemon está activo (puede conflictuar con TLP)"
+    print_warning "power-profiles-daemon is active (may conflict with TLP)"
     CONFLICTS_FOUND=true
 fi
 
 if [ "$CONFLICTS_FOUND" = true ]; then
     echo ""
-    read -p "¿Deseas deshabilitar power-profiles-daemon? [s/N]: " -n 1 -r
+    read -p "Do you want to disable power-profiles-daemon? [y/N]: " -n 1 -r
     echo
-    if [[ $REPLY =~ ^[SsYy]$ ]]; then
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
         systemctl stop power-profiles-daemon
         systemctl mask power-profiles-daemon
-        print_success "power-profiles-daemon deshabilitado"
+        print_success "power-profiles-daemon disabled"
     else
-        print_warning "ADVERTENCIA: Puede haber conflictos con power-profiles-daemon"
+        print_warning "WARNING: There may be conflicts with power-profiles-daemon"
     fi
 else
-    print_success "No hay servicios conflictivos activos"
+    print_success "No conflicting services active"
 fi
 echo ""
 
 # Create tlp.d directory if doesn't exist
-print_info "Preparando directorio /etc/tlp.d/..."
+print_info "Preparing /etc/tlp.d/ directory..."
 mkdir -p /etc/tlp.d
-print_success "Directorio listo"
+print_success "Directory ready"
 echo ""
 
 # Install configuration files
-print_info "Instalando archivos de configuración..."
+print_info "Installing configuration files..."
 
 if [ -d "$SCRIPT_DIR/tlp.d" ]; then
     cp "$SCRIPT_DIR/tlp.d"/*.conf /etc/tlp.d/
     chmod 644 /etc/tlp.d/*.conf
-    print_success "Archivos de configuración instalados"
+    print_success "Configuration files installed"
 else
-    print_error "Directorio tlp.d/ no encontrado"
-    print_error "Asegúrate de ejecutar este script desde el directorio del repositorio"
+    print_error "tlp.d/ directory not found"
+    print_error "Make sure to run this script from the repository directory"
     exit 1
 fi
 echo ""
 
 # Check thinkpad_acpi module
-print_info "Verificando módulo thinkpad_acpi..."
+print_info "Checking thinkpad_acpi module..."
 if lsmod | grep -q thinkpad_acpi; then
-    print_success "Módulo thinkpad_acpi cargado"
+    print_success "thinkpad_acpi module loaded"
 else
-    print_warning "Módulo thinkpad_acpi no está cargado"
+    print_warning "thinkpad_acpi module is not loaded"
     echo ""
-    read -p "¿Deseas cargar el módulo thinkpad_acpi? [s/N]: " -n 1 -r
+    read -p "Do you want to load the thinkpad_acpi module? [y/N]: " -n 1 -r
     echo
-    if [[ $REPLY =~ ^[SsYy]$ ]]; then
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
         modprobe thinkpad_acpi
         echo "thinkpad_acpi" > /etc/modules-load.d/thinkpad.conf
-        print_success "Módulo cargado y configurado para cargar en boot"
+        print_success "Module loaded and configured to load on boot"
     fi
 fi
 echo ""
 
 # Enable and start TLP
-print_info "Habilitando y aplicando TLP..."
+print_info "Enabling and applying TLP..."
 systemctl enable tlp.service
 systemctl start tlp.service
 tlp start
 
-print_success "TLP habilitado y configuración aplicada"
+print_success "TLP enabled and configuration applied"
 echo ""
 
 # Show status
 print_info "=========================================="
-print_info "INSTALACIÓN COMPLETADA"
+print_info "INSTALLATION COMPLETED"
 print_info "=========================================="
 echo ""
 
-print_success "Configuración instalada exitosamente"
-print_info "Backup guardado en: $BACKUP_DIR"
+print_success "Configuration installed successfully"
+print_info "Backup saved in: $BACKUP_DIR"
 echo ""
 
-print_info "Estado actual del sistema:"
+print_info "Current system status:"
 echo ""
 tlp-stat -s | grep -E "(System|TLP status|Power profile|Power source)"
 echo ""
 
 # Verification instructions
-print_info "VERIFICACIÓN:"
+print_info "VERIFICATION:"
 echo ""
-echo "1. Ver configuración de CPU:"
+echo "1. Check CPU configuration:"
 echo "   sudo tlp-stat -p | grep -E '(energy_performance|max_perf|no_turbo|hwp_dynamic)'"
 echo ""
-echo "2. Ver estado de batería:"
+echo "2. Check battery status:"
 echo "   sudo tlp-stat -b | grep threshold"
 echo ""
-echo "3. Probar cambio automático:"
-echo "   - Desconecta el cargador y ejecuta: sudo tlp-stat -s"
-echo "   - Debe mostrar: Power profile = low-power/BAT"
+echo "3. Test automatic switching:"
+echo "   - Unplug charger and run: sudo tlp-stat -s"
+echo "   - Should show: Power profile = low-power/BAT"
 echo ""
-echo "4. Activar modo ultra-ahorro (manual):"
+echo "4. Activate ultra power-saver (manual):"
 echo "   sudo tlp power-saver"
 echo ""
-echo "5. Forzar carga completa (bypass umbrales):"
+echo "5. Force full charge (bypass thresholds):"
 echo "   sudo tlp fullcharge BAT0"
 echo ""
 
-print_success "¡Disfruta de tu ThinkPad optimizado!"
+print_success "Enjoy your optimized ThinkPad!"
 echo ""
-print_info "Documentación completa en: docs/"
-print_info "Cheatsheet de comandos: docs/CHEATSHEET.md"
+print_info "Complete documentation in: docs/"
+print_info "Command cheatsheet: docs/CHEATSHEET.md"

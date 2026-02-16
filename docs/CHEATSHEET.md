@@ -1,107 +1,97 @@
-# TLP Cheatsheet - ThinkPad E14 Gen 6
-#linux #tlp #power-management #thinkpad
+# TLP Command Cheatsheet - ThinkPad E14 Gen 6
+
+Quick reference for TLP commands and common operations.
 
 ---
 
-## 🎯 Comandos Básicos
+## 🎯 Basic Commands
 
-### Control de TLP
+### TLP Control
 ```bash
-# Iniciar TLP y aplicar configuración
+# Start TLP and apply configuration
 sudo tlp start
 
-# Verificar estado general
+# Check general status
 sudo tlp-stat -s
 
-# Ver estadísticas completas (muy verbose)
+# View complete statistics (very verbose)
 sudo tlp-stat
 
-# Ver solo configuración activa
+# View only active configuration
 sudo tlp-stat -c
 ```
 
 ---
 
-## 🔄 Cambio Manual de Modos
+## 🔄 Manual Mode Switching
 
-### Modos Disponibles
+### Available Modes
 ```bash
-# Modo Performance (AC) - forzar incluso en batería
+# Performance mode (AC) - force even on battery
 sudo tlp performance
 
-# Modo Balanced (BAT) - forzar incluso en AC  
+# Balanced mode (BAT) - force even on AC  
 sudo tlp balanced
 
-# Modo Power-Saver (SAV) - ultra ahorro
+# Power-Saver mode (SAV) - ultra power saving
 sudo tlp power-saver
 
-# Volver a modo automático (AC/BAT según fuente)
+# Return to automatic mode (AC/BAT based on power source)
 sudo tlp start
 ```
 
-> **Nota:** El modo automático cambia entre AC/BAT cuando conectas/desconectas el cargador
+> **Note:** Automatic mode switches between AC/BAT when you plug/unplug the charger
 
 ---
 
-## 🔋 Gestión de Batería
+## 🔋 Battery Management
 
-### Ver Estado de Batería
+### View Battery Status
 ```bash
-# Ver todo sobre batería
+# View everything about battery
 sudo tlp-stat -b
 
-# Ver solo umbrales de carga
+# View only charge thresholds
 sudo tlp-stat -b | grep threshold
 
-# Ver capacidad y salud de batería
+# View capacity and battery health
 sudo tlp-stat -b | grep -E "(design|full|remaining)"
 ```
 
-### Forzar Carga Completa (Bypass Temporal de Umbrales)
+### Force Full Charge (Temporary Threshold Bypass)
 ```bash
-# Cargar hasta 100% una sola vez (ignora umbrales temporalmente)
-sudo tlp fullcharge
-
-# O especificar la batería (BAT0 o BAT1)
+# Charge to 100% once (temporarily ignores thresholds)
 sudo tlp fullcharge BAT0
 
-# Después de llegar a 100%, los umbrales se restauran automáticamente
+# After reaching 100%, thresholds automatically restore
 ```
 
-### Resetear Umbrales Manualmente
+### Manually Reset Thresholds
 ```bash
-# Aplicar umbrales configurados inmediatamente
+# Apply configured thresholds immediately
 sudo tlp setcharge
-```
-
-### Descargar Batería para Recalibración
-```bash
-# Descargar hasta cierto nivel (útil para recalibración)
-# Por ejemplo, descargar hasta 70%
-sudo tlp discharge BAT0
-# (presiona Ctrl+C cuando llegue al nivel deseado)
 ```
 
 ---
 
-## 💻 Monitoreo de CPU
+## 💻 CPU Monitoring
 
-### Estadísticas de Procesador
+### Processor Statistics
 ```bash
-# Ver config completa de CPU
+# View complete CPU configuration
 sudo tlp-stat -p
 
-# Ver solo los parámetros clave
+# View only key parameters
 sudo tlp-stat -p | grep -E "(energy_performance|max_perf|no_turbo|hwp_dynamic|platform_profile)"
 
-# Ver frecuencias actuales de cada core
+# View current frequencies for each core
 sudo tlp-stat -p | grep "scaling_cur_freq"
 
-# Ver temperaturas
+# View temperatures
 sudo tlp-stat -t
 ```
 
-### Verificar Parámetros Específicos
+### Verify Specific Parameters
 ```bash
 # Energy Performance Preference (EPP)
 cat /sys/devices/system/cpu/cpu0/cpufreq/energy_performance_preference
@@ -121,58 +111,58 @@ cat /proc/sys/kernel/nmi_watchdog
 
 ---
 
-## 🎮 GPU Intel
+## 🎮 Intel GPU
 
-### Estadísticas de GPU
+### GPU Statistics
 ```bash
-# Ver config de GPU Intel
+# View Intel GPU configuration
 sudo tlp-stat -g
 
-# Ver frecuencias actuales de GPU
+# View current GPU frequencies
 cat /sys/class/drm/card*/gt_cur_freq_mhz
 
-# Monitoreo en tiempo real (requiere intel-gpu-tools)
+# Real-time monitoring (requires intel-gpu-tools)
 sudo intel_gpu_top
 ```
 
 ---
 
-## 💾 Discos y Almacenamiento
+## 💾 Disks and Storage
 
-### Estadísticas de Discos
+### Disk Statistics
 ```bash
-# Ver config de discos y controladores
+# View disk and controller configuration
 sudo tlp-stat -d
 
-# Ver solo Runtime PM de discos
+# View only disk Runtime PM
 sudo tlp-stat -d | grep -i "runtime"
 
-# Ver estado de NVMe
+# View NVMe status
 sudo tlp-stat -d | grep -i nvme
 ```
 
 ---
 
-## 🌐 Dispositivos de Red
+## 🌐 Network Devices
 
 ### WiFi
 ```bash
-# Ver estado de power saving de WiFi
+# View WiFi power saving status
 sudo tlp-stat -w
 
-# Ver adaptador WiFi
+# View WiFi adapter
 iwconfig
 ```
 
 ### USB
 ```bash
-# Ver estado de USB autosuspend
+# View USB autosuspend status
 sudo tlp-stat -u
 
-# Listar dispositivos USB
+# List USB devices
 lsusb
 
-# Ver qué dispositivos están excluidos de autosuspend
+# View devices excluded from autosuspend
 sudo tlp-stat -u | grep "Exclude"
 ```
 
@@ -180,123 +170,120 @@ sudo tlp-stat -u | grep "Exclude"
 
 ## 🔧 Troubleshooting
 
-### Verificar Errores
+### Check for Errors
 ```bash
-# Ver warnings de TLP
+# View TLP warnings
 sudo tlp-stat -w
 
-# Ver mensajes del sistema sobre TLP
+# View system messages about TLP
 journalctl -u tlp.service -b
 
-# Ver últimas 50 líneas del log
+# View last 50 log lines
 journalctl -u tlp.service -n 50
 ```
 
-### Conflictos con Otros Servicios
+### Conflicts with Other Services
 ```bash
-# Verificar si power-profiles-daemon está activo (conflicto)
+# Check if power-profiles-daemon is active (conflict)
 systemctl status power-profiles-daemon
 
-# Deshabilitar power-profiles-daemon si está activo
+# Disable power-profiles-daemon if active
 sudo systemctl stop power-profiles-daemon
 sudo systemctl mask power-profiles-daemon
 ```
 
-### Reload de Configuración
+### Reload Configuration
 ```bash
-# Después de editar archivos en /etc/tlp.d/
+# After editing files in /etc/tlp.d/
 sudo tlp start
 
-# Para ver qué configuración está activa
+# To see active configuration
 sudo tlp-stat -c
 ```
 
 ---
 
-## 📊 Monitoreo de Consumo
+## 📊 Power Consumption Monitoring
 
-### Herramientas Complementarias
+### Complementary Tools
 ```bash
-# Powertop - monitoreo de consumo en tiempo real
+# Powertop - real-time power consumption monitoring
 sudo powertop
 
-# Ver consumo estimado actual
-sudo powertop --auto-tune  # aplicar tunables (cuidado, puede conflictuar con TLP)
-
-# s-tui - interfaz visual para CPU
+# s-tui - visual interface for CPU
 s-tui
 
-# Verificar consumo de paquete de CPU
+# Check CPU package consumption
 sudo tlp-stat -t | grep "Package"
 ```
 
 ---
 
-## 📝 Configuración
+## 📝 Configuration
 
-### Ubicación de Archivos
+### File Locations
 ```bash
-# Archivo principal (usar solo como referencia)
+# Main file (use only as reference)
 /etc/tlp.conf
 
-# Archivos drop-in (AQUÍ van tus personalizaciones)
+# Drop-in files (YOUR customizations go HERE)
 /etc/tlp.d/10-ac-performance.conf
 /etc/tlp.d/20-battery-saver.conf
 /etc/tlp.d/30-ultra-powersave.conf
 /etc/tlp.d/40-battery-care.conf
 
-# Editar configuración
+# Edit configuration
 sudo nano /etc/tlp.d/20-battery-saver.conf
 
-# Después de editar, aplicar cambios
+# After editing, apply changes
 sudo tlp start
 ```
 
 ---
 
-## 🎯 Casos de Uso Comunes
+## 🎯 Common Use Cases
 
-### Escenario: Necesito cargar a 100% una vez
+### Scenario: I need to charge to 100% once
 ```bash
-# Forzar carga completa (ignora umbrales temporalmente)
+# Force full charge (temporarily ignores thresholds)
 sudo tlp fullcharge BAT0
 
-# Los umbrales se restauran automáticamente después
+# Thresholds automatically restore after reaching 100%
 ```
 
-### Escenario: Voy a estar desconectado mucho tiempo
+### Scenario: I'll be disconnected for a long time
 ```bash
-# Activar modo ultra-ahorro
+# Activate ultra power-saver mode
 sudo tlp power-saver
 
-# Verificar que esté activo
+# Check it's active
 sudo tlp-stat -s
 
-# Cuando vuelvas a uso normal
+# When returning to normal use
 sudo tlp start
 ```
 
-### Escenario: Necesito rendimiento máximo ahora
+### Scenario: I need maximum performance now
 ```bash
-# Forzar modo performance (incluso en batería)
+# Force performance mode (even on battery)
 sudo tlp performance
 
-# Verificar
+# Verify
 sudo tlp-stat -p | grep "energy_performance"
 
-# Volver a automático
+# Return to automatic
 sudo tlp start
 ```
 
-### Escenario: Quiero ver si TLP está ahorrando energía
+### Scenario: Want to see if TLP is saving power
 ```bash
-# Comparar consumo antes/después
-sudo powertop  # ver watts totales
+# Compare consumption before/after
+sudo powertop  # view total watts
 
-# Ver si CPU está en frecuencias bajas
+# See if CPU is at low frequencies
 sudo tlp-stat -p | grep "scaling_cur_freq"
 
-# Ver si turbo está deshabilitado (en batería debe ser 1)
+# See if turbo is disabled (on battery should be 1)
 cat /sys/devices/system/cpu/intel_pstate/no_turbo
 ```
 
@@ -304,52 +291,52 @@ cat /sys/devices/system/cpu/intel_pstate/no_turbo
 
 ## 🔍 Quick Reference
 
-### Verificación Rápida del Sistema
+### Quick System Check One-liner
 ```bash
-# One-liner para ver estado completo
+# One-liner to view complete status
 sudo tlp-stat -s && echo "---" && sudo tlp-stat -p | grep -E "(energy_performance|max_perf|no_turbo|hwp_dynamic|platform_profile)"
 ```
 
-### Alias Útiles (agregar a ~/.bashrc o ~/.zshrc)
+### Useful Aliases (add to ~/.bashrc or ~/.zshrc)
 ```bash
-# Alias para comandos comunes
+# Aliases for common commands
 alias tlp-status='sudo tlp-stat -s'
 alias tlp-cpu='sudo tlp-stat -p'
 alias tlp-bat='sudo tlp-stat -b'
 alias tlp-full='sudo tlp fullcharge BAT0'
-alias tlp-save='sudo tlp power-saver && echo "Modo ultra-ahorro activado"'
-alias tlp-normal='sudo tlp start && echo "Modo automático activado"'
-alias tlp-perf='sudo tlp performance && echo "Modo performance activado"'
+alias tlp-save='sudo tlp power-saver && echo "Ultra power-saver activated"'
+alias tlp-normal='sudo tlp start && echo "Automatic mode activated"'
+alias tlp-perf='sudo tlp performance && echo "Performance mode activated"'
 ```
 
 ---
 
-## 📚 Recursos
+## 📚 Resources
 
-- **Documentación oficial:** https://linrunner.de/tlp
-- **Configuración en GitHub:** [tu-repo/tlp-config]
+- **Official documentation:** https://linrunner.de/tlp
+- **Configuration on GitHub:** https://github.com/Fennek115/tlp-thinkpad-e14-gen6
 - **TLP FAQ:** https://linrunner.de/tlp/faq
 
 ---
 
-## ⚙️ Mi Configuración Actual
+## ⚙️ Current Configuration
 
-### Umbrales de Batería
-- **Inicio de carga:** 75%
-- **Detención de carga:** 80%
-- **Comando para bypass:** `sudo tlp fullcharge BAT0`
+### Battery Thresholds
+- **Start charge:** 75%
+- **Stop charge:** 80%
+- **Bypass command:** `sudo tlp fullcharge BAT0`
 
-### Modos Configurados
-- **AC:** balance_performance, 100% rendimiento, turbo ON
-- **BAT:** power, 80% rendimiento, turbo OFF  
-- **SAV:** power, 40% rendimiento, turbo OFF (manual)
+### Configured Modes
+- **AC:** balance_performance, 100% performance, turbo ON
+- **BAT:** power, 80% performance, turbo OFF  
+- **SAV:** power, 50% performance, turbo OFF (manual)
 
-### Consumo Esperado
+### Expected Consumption
 - **AC idle:** ~10-13W
 - **BAT idle:** ~5-7W
 - **SAV idle:** ~4-6W
 
 ---
 
-*Última actualización: 2026-02-16*
+*Last updated: 2026-02-16*  
 *Hardware: ThinkPad E14 Gen 6 - Intel Core Ultra 5 125U*
