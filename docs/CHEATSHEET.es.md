@@ -327,7 +327,7 @@ alias tlp-perf='sudo tlp performance && echo "Modo performance activado"'
 ## 📚 Recursos
 
 - **Documentación oficial:** https://linrunner.de/tlp
-- **Configuración en GitHub:** [tu-repo/tlp-config]
+- **Configuración en GitHub:** https://github.com/Fennek115/tlp-thinkpad-e14-gen6
 - **TLP FAQ:** https://linrunner.de/tlp/faq
 
 ---

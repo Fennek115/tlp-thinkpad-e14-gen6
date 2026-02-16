@@ -356,7 +356,7 @@ sudo tlp start
 Si tienes problemas:
 
 1. Lee la sección de [Troubleshooting](#-troubleshooting)
-2. Revisa el [Cheatsheet](CHEATSHEET.md) de comandos
+2. Revisa el [Cheatsheet](CHEATSHEET.es.md) de comandos
 3. Consulta la [documentación oficial de TLP](https://linrunner.de/tlp)
 4. Abre un issue en GitHub con:
    - Salida de `sudo tlp-stat -s`
