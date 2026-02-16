@@ -30,7 +30,7 @@ Optimized TLP power management configuration for Lenovo ThinkPad E14 Gen 6 with 
 
 - **Battery Care:**
   - Charge thresholds (75-80%) to extend battery lifespan
-  - Expected 2-3x longer battery life
+  - Expected 1.5x longer battery life
   - Temporary full charge override available
 
 - **Hardware-Specific:**
@@ -71,7 +71,7 @@ sudo pacman -S tlp
 
 ```bash
 # Clone this repository
-git clone https://github.com/yourusername/tlp-thinkpad-e14-gen6.git
+git clone https://github.com/Fennek115/tlp-thinkpad-e14-gen6.git
 cd tlp-thinkpad-e14-gen6
 
 # Backup existing configuration
@@ -176,7 +176,7 @@ tlp.d/
 
 ### Power-Saver Mode (30-ultra-powersave.conf)
 - EPP: `power`
-- Max Performance: `40%`
+- Max Performance: `50%`
 - Turbo Boost: **Disabled**
 - HWP Dynamic Boost: **Disabled**
 - Platform Profile: `low-power`
