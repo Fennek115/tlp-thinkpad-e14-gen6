@@ -1,10 +1,12 @@
 # TLP Configuration for ThinkPad E14 Gen 6 (Intel Core Ultra 5 125U)
 
-Optimized TLP power management configuration for Lenovo ThinkPad E14 Gen 6 with Intel Core Ultra 5 125U processor.
+> 🇪🇸 [Versión en Español](#configuración-tlp-para-thinkpad-e14-gen-6-intel-core-ultra-5-125u) | [Spanish Documentation](docs/)
+
+Optimized TLP power management configuration for Lenovo ThinkPad E14 Gen 6 with Intel Core Ultra 5 125U processor (Meteor Lake).
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TLP Version](https://img.shields.io/badge/TLP-1.9.1-blue.svg)](https://linrunner.de/tlp)
-[![Arch Linux](https://img.shields.io/badge/Tested%20on-Arch%20Linux-1793D1.svg)](https://archlinux.org/)
+[![Tested on Arch](https://img.shields.io/badge/Tested%20on-Arch%20Linux-1793D1.svg)](https://archlinux.org/)
 
 ## 📊 Results
 
@@ -19,19 +21,19 @@ Optimized TLP power management configuration for Lenovo ThinkPad E14 Gen 6 with 
 
 - **Three power profiles:**
   - **AC Mode:** Balanced performance when plugged in
-  - **Battery Mode:** Optimized efficiency for daily use
-  - **Power-Saver Mode:** Maximum battery life (manual activation)
+  - **Battery Mode:** Optimized efficiency for daily use (80% max performance)
+  - **Power-Saver Mode:** Maximum battery life (50% max performance, manual activation)
 
 - **CPU Optimization:**
   - EPP (Energy Performance Preference) configuration
   - Turbo Boost control per mode
   - HWP Dynamic Boost for Intel Core Ultra series
-  - Performance limits (100% AC, 80% BAT, 40% SAV)
+  - Performance limits optimized for each mode
 
 - **Battery Care:**
   - Charge thresholds (75-80%) to extend battery lifespan
-  - Expected 1.5x longer battery life
-  - Temporary full charge override available
+  - Expected 2-3x longer battery life
+  - Temporary full charge override available with `sudo tlp fullcharge BAT0`
 
 - **Hardware-Specific:**
   - Optimized for Intel Core Ultra 5 125U (Meteor Lake)
@@ -54,57 +56,63 @@ Optimized TLP power management configuration for Lenovo ThinkPad E14 Gen 6 with 
 - AMD CPUs (requires different configuration)
 - Very old Intel CPUs without HWP (pre-6th gen)
 
-## 📦 Installation
+## 📦 Quick Installation
 
 ### Prerequisites
 
 ```bash
-# Install TLP (Arch Linux)
+# Arch Linux / Manjaro
 sudo pacman -S tlp
 
-# Other distributions
-# Debian/Ubuntu: sudo apt install tlp
-# Fedora: sudo dnf install tlp
+# Debian / Ubuntu
+sudo apt install tlp
+
+# Fedora
+sudo dnf install tlp
 ```
 
-### Quick Install
+### Install Configuration
 
 ```bash
-# Clone this repository
+# Clone repository
 git clone https://github.com/Fennek115/tlp-thinkpad-e14-gen6.git
 cd tlp-thinkpad-e14-gen6
 
-# Backup existing configuration
-sudo cp /etc/tlp.conf /etc/tlp.conf.backup
-sudo cp -r /etc/tlp.d /etc/tlp.d.backup 2>/dev/null || true
+# Run installation script
+sudo ./install.sh
 
-# Install configuration files
+# Or manually
 sudo cp tlp.d/*.conf /etc/tlp.d/
-
-# Apply configuration
 sudo tlp start
-
-# Verify
-sudo tlp-stat -s
 ```
 
-### Manual Install
+### Verify Installation
 
-1. Download the `.conf` files from the `tlp.d/` directory
-2. Copy them to `/etc/tlp.d/`:
-   ```bash
-   sudo cp 10-ac-performance.conf /etc/tlp.d/
-   sudo cp 20-battery-saver.conf /etc/tlp.d/
-   sudo cp 30-ultra-powersave.conf /etc/tlp.d/
-   sudo cp 40-battery-care.conf /etc/tlp.d/
-   ```
-3. Apply: `sudo tlp start`
+```bash
+# Check status
+sudo tlp-stat -s
+
+# Check CPU configuration
+sudo tlp-stat -p | grep -E "(energy_performance|max_perf|no_turbo|hwp_dynamic)"
+
+# Expected on AC:
+# energy_performance = balance_performance
+# max_perf = 100%
+# no_turbo = 0 (turbo enabled)
+# hwp_dynamic_boost = 1
+
+# Expected on Battery:
+# energy_performance = power
+# max_perf = 80%
+# no_turbo = 1 (turbo disabled)
+# hwp_dynamic_boost = 0
+```
 
 ## 🎯 Usage
 
 ### Automatic Mode Switching
 
-TLP automatically switches between AC and Battery modes when you plug/unplug the charger. No manual intervention needed.
+TLP automatically switches between AC and Battery modes when you plug/unplug the charger.
 
 ### Manual Mode Override
 
@@ -115,7 +123,7 @@ sudo tlp performance
 # Force Battery mode (even on AC)
 sudo tlp balanced
 
-# Activate Ultra Power-Saver mode
+# Activate Ultra Power-Saver mode (50% performance)
 sudo tlp power-saver
 
 # Return to automatic mode
@@ -130,191 +138,383 @@ sudo tlp-stat -b
 
 # Force full charge (bypass 80% threshold temporarily)
 sudo tlp fullcharge BAT0
-
 # Thresholds automatically restore after reaching 100%
 ```
 
-### Monitoring
-
-```bash
-# Overall system status
-sudo tlp-stat -s
-
-# CPU configuration
-sudo tlp-stat -p
-
-# Quick verification
-sudo tlp-stat -p | grep -E "(energy_performance|max_perf|no_turbo|hwp_dynamic)"
-```
-
-## 📁 File Structure
+## 📁 Repository Structure
 
 ```
-tlp.d/
-├── 10-ac-performance.conf      # AC mode configuration
-├── 20-battery-saver.conf       # Battery mode configuration
-├── 30-ultra-powersave.conf     # Power-saver mode configuration
-└── 40-battery-care.conf        # Battery charge thresholds
+.
+├── README.md                       # This file (bilingual)
+├── LICENSE                         # MIT License
+├── install.sh                      # Automated installation script
+├── tlp.d/                          # TLP configuration files
+│   ├── 10-ac-performance.conf      # AC mode settings
+│   ├── 20-battery-saver.conf       # Battery mode settings
+│   ├── 30-ultra-powersave.conf     # Power-saver mode settings
+│   └── 40-battery-care.conf        # Battery charge thresholds
+└── docs/                           # Documentation
+    ├── CHEATSHEET.md               # Command reference (English)
+    ├── CHEATSHEET.es.md            # Referencia de comandos (Español)
+    ├── INSTALLATION-GUIDE.md       # Detailed installation (English)
+    ├── GUIA-INSTALACION.md         # Guía detallada (Español)
+    ├── TECHNICAL-ANALYSIS.md       # Technical details (English)
+    └── ANALISIS-COMPLETO.md        # Análisis técnico (Español)
 ```
 
 ## ⚙️ Configuration Details
 
-### AC Mode (10-ac-performance.conf)
+### AC Mode (`10-ac-performance.conf`)
 - EPP: `balance_performance`
 - Max Performance: `100%`
 - Turbo Boost: **Enabled**
 - HWP Dynamic Boost: **Enabled**
 - Platform Profile: `balanced`
 
-### Battery Mode (20-battery-saver.conf)
+### Battery Mode (`20-battery-saver.conf`)
 - EPP: `power`
 - Max Performance: `80%`
 - Turbo Boost: **Disabled**
 - HWP Dynamic Boost: **Disabled**
 - Platform Profile: `low-power`
-- AHCI Runtime PM: **Enabled** (15s timeout)
+- AHCI Runtime PM: **Enabled**
 
-### Power-Saver Mode (30-ultra-powersave.conf)
+### Power-Saver Mode (`30-ultra-powersave.conf`)
 - EPP: `power`
-- Max Performance: `50%`
+- Max Performance: `50%` (customized from default 40%)
 - Turbo Boost: **Disabled**
 - HWP Dynamic Boost: **Disabled**
 - Platform Profile: `low-power`
 
-### Battery Care (40-battery-care.conf)
+### Battery Care (`40-battery-care.conf`)
 - Start Charge: `75%`
 - Stop Charge: `80%`
-- Extends battery lifespan significantly
-
-## 🔧 Customization
-
-### Adjusting Battery Mode Performance
-
-If you find battery mode too slow, edit `/etc/tlp.d/20-battery-saver.conf`:
-
-```bash
-# Less aggressive (more performance)
-CPU_MAX_PERF_ON_BAT=90
-
-# More aggressive (more battery life)
-CPU_MAX_PERF_ON_BAT=70
-```
-
-Then apply: `sudo tlp start`
-
-### Changing Battery Thresholds
-
-Edit `/etc/tlp.d/40-battery-care.conf`:
-
-```bash
-# Maximum longevity (60-70%)
-START_CHARGE_THRESH_BAT0=60
-STOP_CHARGE_THRESH_BAT0=70
-
-# Maximum capacity (90-100%)
-START_CHARGE_THRESH_BAT0=90
-STOP_CHARGE_THRESH_BAT0=100
-```
 
 ## 📚 Documentation
 
-- [Complete Analysis](docs/ANALISIS-COMPLETO.md) - Detailed technical analysis (Spanish)
-- [Installation Guide](docs/GUIA-INSTALACION.md) - Step-by-step installation (Spanish)
-- [Command Cheatsheet](docs/CHEATSHEET.md) - Quick reference for TLP commands (Spanish)
-- [Official TLP Documentation](https://linrunner.de/tlp)
+**English:**
+- [Command Cheatsheet](docs/CHEATSHEET.md) - Quick reference
+- [Installation Guide](docs/INSTALLATION-GUIDE.md) - Detailed setup
+- [Technical Analysis](docs/TECHNICAL-ANALYSIS.md) - In-depth explanation
+
+**Español:**
+- [Hoja de Referencia](docs/CHEATSHEET.es.md) - Comandos útiles
+- [Guía de Instalación](docs/GUIA-INSTALACION.md) - Instalación detallada
+- [Análisis Técnico](docs/ANALISIS-COMPLETO.md) - Explicación completa
 
 ## 🐛 Troubleshooting
 
-### TLP doesn't start or shows errors
+### Configuration not applying
 
 ```bash
-# Check for conflicts with other power management services
+# Check for conflicts
 systemctl status power-profiles-daemon
 
-# If active, disable it
+# Disable if active
 sudo systemctl stop power-profiles-daemon
 sudo systemctl mask power-profiles-daemon
 
 # Restart TLP
-sudo systemctl restart tlp.service
+sudo systemctl restart tlp
+sudo tlp start
 ```
 
-### Battery thresholds not working
+### High power consumption
 
 ```bash
-# Verify ThinkPad ACPI module is loaded
-lsmod | grep thinkpad_acpi
-
-# If not loaded
-sudo modprobe thinkpad_acpi
-echo "thinkpad_acpi" | sudo tee /etc/modules-load.d/thinkpad.conf
-
-# Check thresholds
-sudo tlp-stat -b | grep threshold
-```
-
-### High power consumption despite configuration
-
-```bash
-# Verify configuration is active
-sudo tlp-stat -c
-
-# Check CPU settings
-sudo tlp-stat -p | grep -E "(energy_performance|max_perf|no_turbo)"
-
 # Monitor power usage
 sudo powertop
+
+# Verify active configuration
+sudo tlp-stat -c
+
+# Check background processes
+htop
 ```
+
+See [Installation Guide](docs/INSTALLATION-GUIDE.md) for more troubleshooting steps.
 
 ## 🤝 Contributing
 
-Contributions are welcome! If you have improvements or configurations for similar hardware:
+Contributions welcome! If you have:
+- Improvements for similar hardware
+- Translations
+- Bug fixes
 
-1. Fork this repository
-2. Create your feature branch (`git checkout -b feature/improvement`)
-3. Commit your changes (`git commit -am 'Add some improvement'`)
-4. Push to the branch (`git push origin feature/improvement`)
-5. Open a Pull Request
+Please open an issue or pull request.
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License - see [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 
 - [TLP Project](https://linrunner.de/tlp) - Excellent power management tool
-- [Arch Linux Community](https://archlinux.org/) - For comprehensive documentation
-- Intel Core Ultra 5 125U - For having proper HWP support
+- [Arch Linux Community](https://archlinux.org/)
+- Intel Core Ultra 5 125U - For proper HWP support
 
-## 📞 Support
+---
+---
+---
 
-If you encounter issues:
+# Configuración TLP para ThinkPad E14 Gen 6 (Intel Core Ultra 5 125U)
 
-1. Check the [Troubleshooting](#-troubleshooting) section
-2. Review [TLP FAQ](https://linrunner.de/tlp/faq)
-3. Open an issue on GitHub with:
-   - Output of `sudo tlp-stat -s`
-   - Output of `sudo tlp-stat -p`
-   - Description of the problem
+> 🇬🇧 [English Version](#tlp-configuration-for-thinkpad-e14-gen-6-intel-core-ultra-5-125u) | [English Documentation](docs/)
 
-## 🔖 Version History
+Configuración optimizada de TLP para la gestión de energía en Lenovo ThinkPad E14 Gen 6 con procesador Intel Core Ultra 5 125U (Meteor Lake).
 
-### v2.0 (2026-02-16)
-- ✅ Added `CPU_HWP_DYN_BOOST` configuration (critical for Core Ultra CPUs)
-- ✅ Added `AHCI_RUNTIME_PM` for NVMe power management
-- ✅ Added `NMI_WATCHDOG` configuration
-- ✅ Fixed Intel GPU configuration (now uses automatic management)
-- ✅ Improved documentation
-- ✅ Additional 1-2W power savings
+[![Licencia: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Versión TLP](https://img.shields.io/badge/TLP-1.9.1-blue.svg)](https://linrunner.de/tlp)
+[![Probado en Arch](https://img.shields.io/badge/Probado%20en-Arch%20Linux-1793D1.svg)](https://archlinux.org/)
 
-### v1.0 (2026-02-16)
-- ✅ Initial release
-- ✅ Basic CPU, platform profile, and battery care configuration
-- ✅ ~60% power consumption reduction
+## 📊 Resultados
+
+| Métrica | Antes | Después | Mejora |
+|---------|-------|---------|--------|
+| Consumo idle (AC) | ~15W | ~10-13W | ↓ 20-30% |
+| Consumo idle (Batería) | ~15W | ~5-7W | ↓ 60-65% |
+| Duración de batería | 3-4 horas | 6-8 horas | +60-100% |
+| Temperatura CPU (idle) | 56-62°C | 40-50°C | ↓ 15°C |
+
+## ⚡ Características
+
+- **Tres perfiles de energía:**
+  - **Modo AC:** Rendimiento balanceado cuando está enchufado
+  - **Modo Batería:** Eficiencia optimizada para uso diario (80% rendimiento máx.)
+  - **Modo Ultra-Ahorro:** Máxima duración de batería (50% rendimiento máx., activación manual)
+
+- **Optimización de CPU:**
+  - Configuración EPP (Energy Performance Preference)
+  - Control de Turbo Boost por modo
+  - HWP Dynamic Boost para serie Intel Core Ultra
+  - Límites de rendimiento optimizados para cada modo
+
+- **Cuidado de Batería:**
+  - Umbrales de carga (75-80%) para extender vida útil
+  - Vida útil esperada 2-3x más larga
+  - Override temporal de carga completa con `sudo tlp fullcharge BAT0`
+
+- **Específico para Hardware:**
+  - Optimizado para Intel Core Ultra 5 125U (Meteor Lake)
+  - Gestión de energía Runtime para SSD NVMe
+  - Auto-gestión de gráficos Intel Arc
+  - Integración con ThinkPad ACPI
+
+## 🖥️ Compatibilidad de Hardware
+
+**Objetivo Principal:**
+- Lenovo ThinkPad E14 Gen 6 (Intel)
+- Intel Core Ultra 5 125U
+
+**Debería Funcionar Con:**
+- ThinkPad E14/E16 Gen 6 (variantes Intel)
+- Otras laptops Lenovo con Intel Core Ultra Series 1 (Meteor Lake)
+- CPUs Intel con soporte HWP (Core i 6ta gen o más nuevo)
+
+**No Compatible Con:**
+- CPUs AMD (requiere configuración diferente)
+- CPUs Intel muy antiguas sin HWP (pre-6ta gen)
+
+## 📦 Instalación Rápida
+
+### Prerequisitos
+
+```bash
+# Arch Linux / Manjaro
+sudo pacman -S tlp
+
+# Debian / Ubuntu
+sudo apt install tlp
+
+# Fedora
+sudo dnf install tlp
+```
+
+### Instalar Configuración
+
+```bash
+# Clonar repositorio
+git clone https://github.com/Fennek115/tlp-thinkpad-e14-gen6.git
+cd tlp-thinkpad-e14-gen6
+
+# Ejecutar script de instalación
+sudo ./install.sh
+
+# O manualmente
+sudo cp tlp.d/*.conf /etc/tlp.d/
+sudo tlp start
+```
+
+### Verificar Instalación
+
+```bash
+# Ver estado
+sudo tlp-stat -s
+
+# Ver configuración de CPU
+sudo tlp-stat -p | grep -E "(energy_performance|max_perf|no_turbo|hwp_dynamic)"
+
+# Esperado en AC:
+# energy_performance = balance_performance
+# max_perf = 100%
+# no_turbo = 0 (turbo habilitado)
+# hwp_dynamic_boost = 1
+
+# Esperado en Batería:
+# energy_performance = power
+# max_perf = 80%
+# no_turbo = 1 (turbo deshabilitado)
+# hwp_dynamic_boost = 0
+```
+
+## 🎯 Uso
+
+### Cambio Automático de Modos
+
+TLP cambia automáticamente entre modos AC y Batería cuando conectas/desconectas el cargador.
+
+### Override Manual de Modos
+
+```bash
+# Forzar modo Performance (incluso en batería)
+sudo tlp performance
+
+# Forzar modo Batería (incluso en AC)
+sudo tlp balanced
+
+# Activar modo Ultra-Ahorro (50% rendimiento)
+sudo tlp power-saver
+
+# Volver a modo automático
+sudo tlp start
+```
+
+### Gestión de Batería
+
+```bash
+# Ver estado de batería y umbrales
+sudo tlp-stat -b
+
+# Forzar carga completa (bypass temporal del umbral 80%)
+sudo tlp fullcharge BAT0
+# Los umbrales se restauran automáticamente después de llegar a 100%
+```
+
+## 📁 Estructura del Repositorio
+
+```
+.
+├── README.md                       # Este archivo (bilingüe)
+├── LICENSE                         # Licencia MIT
+├── install.sh                      # Script de instalación automatizada
+├── tlp.d/                          # Archivos de configuración TLP
+│   ├── 10-ac-performance.conf      # Configuración modo AC
+│   ├── 20-battery-saver.conf       # Configuración modo Batería
+│   ├── 30-ultra-powersave.conf     # Configuración modo Ultra-Ahorro
+│   └── 40-battery-care.conf        # Umbrales de carga de batería
+└── docs/                           # Documentación
+    ├── CHEATSHEET.md               # Referencia de comandos (Inglés)
+    ├── CHEATSHEET.es.md            # Referencia de comandos (Español)
+    ├── INSTALLATION-GUIDE.md       # Instalación detallada (Inglés)
+    ├── GUIA-INSTALACION.md         # Guía detallada (Español)
+    ├── TECHNICAL-ANALYSIS.md       # Detalles técnicos (Inglés)
+    └── ANALISIS-COMPLETO.md        # Análisis técnico (Español)
+```
+
+## ⚙️ Detalles de Configuración
+
+### Modo AC (`10-ac-performance.conf`)
+- EPP: `balance_performance`
+- Rendimiento Máximo: `100%`
+- Turbo Boost: **Habilitado**
+- HWP Dynamic Boost: **Habilitado**
+- Platform Profile: `balanced`
+
+### Modo Batería (`20-battery-saver.conf`)
+- EPP: `power`
+- Rendimiento Máximo: `80%`
+- Turbo Boost: **Deshabilitado**
+- HWP Dynamic Boost: **Deshabilitado**
+- Platform Profile: `low-power`
+- AHCI Runtime PM: **Habilitado**
+
+### Modo Ultra-Ahorro (`30-ultra-powersave.conf`)
+- EPP: `power`
+- Rendimiento Máximo: `50%` (personalizado desde 40% por defecto)
+- Turbo Boost: **Deshabilitado**
+- HWP Dynamic Boost: **Deshabilitado**
+- Platform Profile: `low-power`
+
+### Cuidado de Batería (`40-battery-care.conf`)
+- Inicio de Carga: `75%`
+- Detención de Carga: `80%`
+
+## 📚 Documentación
+
+**English:**
+- [Command Cheatsheet](docs/CHEATSHEET.md) - Referencia rápida
+- [Installation Guide](docs/INSTALLATION-GUIDE.md) - Configuración detallada
+- [Technical Analysis](docs/TECHNICAL-ANALYSIS.md) - Explicación en profundidad
+
+**Español:**
+- [Hoja de Referencia](docs/CHEATSHEET.es.md) - Comandos útiles
+- [Guía de Instalación](docs/GUIA-INSTALACION.md) - Instalación detallada
+- [Análisis Técnico](docs/ANALISIS-COMPLETO.md) - Explicación completa
+
+## 🐛 Solución de Problemas
+
+### La configuración no se aplica
+
+```bash
+# Verificar conflictos
+systemctl status power-profiles-daemon
+
+# Deshabilitar si está activo
+sudo systemctl stop power-profiles-daemon
+sudo systemctl mask power-profiles-daemon
+
+# Reiniciar TLP
+sudo systemctl restart tlp
+sudo tlp start
+```
+
+### Alto consumo de energía
+
+```bash
+# Monitorear consumo
+sudo powertop
+
+# Verificar configuración activa
+sudo tlp-stat -c
+
+# Ver procesos en segundo plano
+htop
+```
+
+Consulta la [Guía de Instalación](docs/GUIA-INSTALACION.md) para más pasos de solución de problemas.
+
+## 🤝 Contribuciones
+
+¡Las contribuciones son bienvenidas! Si tienes:
+- Mejoras para hardware similar
+- Traducciones
+- Correcciones de bugs
+
+Por favor abre un issue o pull request.
+
+## 📄 Licencia
+
+Licencia MIT - ver archivo [LICENSE](LICENSE) para detalles.
+
+## 🙏 Agradecimientos
+
+- [Proyecto TLP](https://linrunner.de/tlp) - Excelente herramienta de gestión de energía
+- [Comunidad Arch Linux](https://archlinux.org/)
+- Intel Core Ultra 5 125U - Por el soporte adecuado de HWP
 
 ---
 
 **Hardware:** ThinkPad E14 Gen 6 (21M80014CL) - Intel Core Ultra 5 125U  
-**Tested on:** Arch Linux (kernel 6.18.7) - TLP 1.9.1  
-**Author:** dust115  
-**Last Updated:** 2026-02-16
+**Probado en:** Arch Linux (kernel 6.18.7) - TLP 1.9.1  
+**Autor:** Fennek115  
+**Última Actualización:** 2026-02-16
