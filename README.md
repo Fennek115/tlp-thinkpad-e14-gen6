@@ -199,8 +199,8 @@ sudo tlp fullcharge BAT0
 
 **Español:**
 - [Hoja de Referencia](docs/CHEATSHEET.es.md) - Comandos útiles
-- [Guía de Instalación](docs/GUIA-INSTALACION.md) - Instalación detallada
-- [Análisis Técnico](docs/ANALISIS-COMPLETO.md) - Explicación completa
+- [Guía de Instalación](docs/GUIA-INSTALACION.es.md) - Instalación detallada
+- [Análisis Técnico](docs/ANALISIS-COMPLETO.es.md) - Explicación completa
 
 ## 🐛 Troubleshooting
 
@@ -458,8 +458,8 @@ sudo tlp fullcharge BAT0
 
 **Español:**
 - [Hoja de Referencia](docs/CHEATSHEET.es.md) - Comandos útiles
-- [Guía de Instalación](docs/GUIA-INSTALACION.md) - Instalación detallada
-- [Análisis Técnico](docs/ANALISIS-COMPLETO.md) - Explicación completa
+- [Guía de Instalación](docs/GUIA-INSTALACION.es.md) - Instalación detallada
+- [Análisis Técnico](docs/ANALISIS-COMPLETO.es.md) - Explicación completa
 
 ## 🐛 Solución de Problemas
 
